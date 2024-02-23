@@ -15,7 +15,6 @@ class Image extends Model
             'path',
             'type',
             'use',
-            'profile',
             'description',
             'dimensions'
         ]; 
@@ -24,5 +23,8 @@ class Image extends Model
     {
         return $this->morphTo();
     }
+
+
+    
 
 }

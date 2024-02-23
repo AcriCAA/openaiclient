@@ -15,7 +15,15 @@
                     @endif
 
 
-                  <img class="img-fluid p-3" src="{{$result->api_image_url}}" />
+                  {{-- <img class="img-fluid p-3" src="{{$result->image->path}}" /> --}}
+
+                    @if(isset($result->image))
+                   
+                      <img src="{{asset($result->image->path)}}"  alt="{{$result->revised_prompt ?? 'result image from open ai'}}" class="card-img-top">
+            
+              
+
+                   @endif
 
                   <p><strong>Original prompt: </strong>{{$result->original_prompt}}</p>
                   <p><strong>Revised prompt: </strong>{{$result->revised_prompt}}</p>

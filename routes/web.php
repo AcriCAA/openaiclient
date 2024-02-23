@@ -23,8 +23,6 @@ Route::get('/home', [App\Http\Controllers\ResultController::class, 'show'])->nam
 
 Route::get('/results/show/{result}', [App\Http\Controllers\ResultController::class, 'show'])->name('result_show');
 
-Route::post('/submit', [App\Http\Controllers\HomeController::class, 'submit'])->name('submit'); 
-
-Auth::routes();
+Route::post('/submit', [App\Http\Controllers\ResultController::class, 'submit'])->name('submit'); 
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

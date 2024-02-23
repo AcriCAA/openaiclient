@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('path'); 
             $table->string('type'); 
             $table->string('dimensions'); 
-            $table->string('description')->nullable(); 
+            $table->longText('description')->nullable(); 
             $table->string('use')->default('generic');
             $table->morphs('imageable'); 
         });

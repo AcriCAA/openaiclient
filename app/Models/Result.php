@@ -17,4 +17,12 @@ class Result extends Model
                 'original_prompt', 
                 'revised_prompt'
             ];
+
+
+
+    public function image()
+    {
+        return $this->morphOne(Image::class, 'imageable');
+    }
+    
 }
