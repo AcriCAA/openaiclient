@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Http;
 
 use App\Models\Result; 
 
+use App\Models\Image; 
+
 
 class HomeController extends Controller
 {
@@ -61,19 +63,14 @@ class HomeController extends Controller
 
             ]);
 
-        // $url = $response->body(); 
-
-        // return $response->json(); 
-
-        
-
-        // $data = $response->json();
-
-        // $result = json_encode($data, true);
 
         $data = $response->getBody()->getContents();
 
         $data = json_decode($data, true); 
+
+        $image = Image::create([
+
+        ])
 
         $result = Result::create(
             [
