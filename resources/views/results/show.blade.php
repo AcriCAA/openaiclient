@@ -19,7 +19,7 @@
 
                     @if(isset($result->image))
                    
-                      <img src="{{asset($result->image->path)}}"  alt="{{$result->revised_prompt ?? 'result image from open ai'}}" class="card-img-top">
+                      <img src="{{Storage::disk('public')->url($result->image->path)}}"  alt="{{$result->revised_prompt ?? 'result image from open ai'}}" class="card-img-top">
             
               
 

@@ -104,6 +104,7 @@ class ResultController extends Controller
 
             $image_name = Str::squish($api_model.$data["created"].Str::take(Str::squish($data["data"]["0"]["revised_prompt"]), 5)); 
 
+            $image_name.='.png'; 
 
             Storage::disk('public')->put($image_name, file_get_contents($data["data"]["0"]["url"]));
 
