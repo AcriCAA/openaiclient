@@ -16,12 +16,12 @@ use Illuminate\Support\Str;
 class ResultController extends Controller
 {
     //
-
+    const MODEL = 'dall-e-3';
+    const IMAGE_COUNT = 1;
+    const IMAGE_SIZE = '1024x1024';
     public function show(Result $result){
 
-
         return view('results.show', ['result' => $result]); 
-
 
     }
 
@@ -46,76 +46,68 @@ class ResultController extends Controller
 
 
 
-    public function submit(Request $request){
+    public function submit(Request $request)
+    {
+        // Extracted constants for default values
 
-  //       curl https://api.openai.com/v1/images/generations \
-  // -H "Content-Type: application/json" \
-  // -H "Authorization: Bearer $OPENAI_API_KEY" \
-  // -d '{
-  //   "model": "dall-e-3",
-  //   "prompt": "A sloth wearing sunglasses slowly walking down the middle of a busy street smiling. The style should be pixel art, like 80s and 90s video games.",
-  //   "n": 1,
-  //   "size": "1024x1024"
-  // }'
-        //hard coding these for now
-        $api_model = 'dall-e-3';
-        $n = 1; 
-        $size = "1024x1024"; 
+        // Generate the image using a helper method
+        $decodedResponse = $this->generateImage(
+            $request->input('description')
+        );
 
+        // Create the result from the API response
+        $result = Result::create([
+            'api_model' => self::MODEL,
+            'api_created_at' => $decodedResponse['created'] ?? '',
+            'api_image_url' => $decodedResponse['data'][0]['url'] ?? '',
+            'image_size' => self::IMAGE_SIZE,
+            'original_prompt' => $request->input('description') ?? '',
+            'revised_prompt' => $decodedResponse['data'][0]['revised_prompt'] ?? ''
+        ]);
 
+        // Store the image and associate it with the result
+        $imageUrl = $decodedResponse['data'][0]['url'] ?? null;
+        if ($imageUrl !== null) {
+            $this->storeImage(
+                $result,
+                $decodedResponse,
+                $imageUrl
+            );
+        }
+
+        // Redirect to the result view
+        return redirect()->route('result_show', ['result' => $result->id]);
+    }
+
+// Helper method for generating an image using the OpenAI API
+    private function generateImage(string $description): array
+    {
         $response = Http::withToken(config('services.openai.key'))
-        ->post('https://api.openai.com/v1/images/generations', 
-
-            [
-
-                "model"=> $api_model,
-                "prompt"=> $request->input('description'),
-                "n"=> $n,
-                "size"=> $size                    
-
+            ->post('https://api.openai.com/v1/images/generations', [
+                'model' => self::MODEL,
+                'prompt' => $description,
+                'n' => self::IMAGE_COUNT,
+                'size' => self::IMAGE_SIZE,
             ]);
 
 
-        $data = $response->getBody()->getContents();
+        return json_decode($response->getBody()->getContents(), true);
+    }
 
-        $data = json_decode($data, true); 
+// Helper method for storing the generated image
+    private function storeImage(Result $result, array $decodedResponse, string $imageUrl): void
+    {
+        $imageFileName = Str::squish(self::MODEL . $decodedResponse['created'] . Str::take(
+                    Str::squish($decodedResponse['data'][0]['revised_prompt']), 5
+                )) . '.png';
 
-      
+        Storage::disk('public')->put($imageFileName, file_get_contents($imageUrl));
 
-        
-
-        
-
-        $result = Result::create(
-            [
-                'api_model' => $api_model ?? '',
-                'api_created_at' => $data["created"] ?? '',
-                'api_image_url' => $data["data"]["0"]["url"] ?? '', 
-                'image_size' => $size ?? '', 
-                'original_prompt' => $request->input('description') ?? '', 
-                'revised_prompt' => $data["data"]["0"]["revised_prompt"] ?? ''
-
-            ]
-
+        $this->saveImage(
+            $result,
+            $decodedResponse,
+            $imageFileName,
+            self::IMAGE_SIZE
         );
-
-        //save result image
-          if(null !== $data["data"]["0"]["url"]){
-
-            $image_name = Str::squish($api_model.$data["created"].Str::take(Str::squish($data["data"]["0"]["revised_prompt"]), 5)); 
-
-            $image_name.='.png'; 
-
-            Storage::disk('public')->put($image_name, file_get_contents($data["data"]["0"]["url"]));
-
-            //passing image name as path 
-            $image = $this->saveImage($result, $data, $image_name, $size);     
-
-        }
-
-
-        return redirect()->route('result_show',['result' => $result->id]);  
-        
-
     }
 }

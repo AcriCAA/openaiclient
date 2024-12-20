@@ -55,6 +55,13 @@
           </form>
 
 
+                    @foreach($images as $image)
+                            <div class="col-12">
+                    Images here
+
+                            </div>
+                        @endforeach
+
                 </div>
             </div>
         </div>
