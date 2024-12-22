@@ -53,23 +53,36 @@
 
 
                         </form>
-
-
-                        @foreach($results as $result)
-                            <ul class="list-group mb-3">
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <span>{{ $result->original_prompt }}</span>
-                                    @if(isset($result->image))
-                                    <img src="{{ $result->image->path }}" alt="Image" class="img-thumbnail"
-                                         style="width: 100px; height: auto;">
-                                        @endif
-                                </li>
-                            </ul>
-                        @endforeach
-
                     </div>
                 </div>
+
+
+            <div class="card mt-3">
+
+                <div class="card-header">{{ __('Results') }}</div>
+                <div class="card-body">
+
+                    @foreach($results as $result)
+                        <ul class="list-group mb-3">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>{{ $result->original_prompt }}</span>
+                                @if(isset($result->image))
+                                    <img src="{{ $result->image->path }}" alt="Image" class="img-thumbnail"
+                                         style="width: 100px; height: auto;">
+                                @endif
+                            </li>
+                        </ul>
+                    @endforeach
+
+                </div>
+            </div>
             </div>
         </div>
+
+
+
+
+
+
     </div>
 @endsection
