@@ -14,8 +14,6 @@
                             </div>
                         @endif
 
-                        {{ __('You are logged in!') }}
-
                         <form class="row g-3" method="POST" action="{{route('submit')}}" enctype="multipart/form-data">
 
                             {{-- include csrf field in all of our forms for authentication --}}
@@ -59,13 +57,15 @@
 
             <div class="card mt-3">
 
-                <div class="card-header">{{ __('Results') }}</div>
+                <div class="card-header">{{ __('Previous Prompts') }}</div>
                 <div class="card-body">
 
                     @foreach($results as $result)
                         <ul class="list-group mb-3">
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span>{{ $result->original_prompt }}</span>
+                                <a href="{{ route('result_show', ['result' => $result->id]) }}" class="text-decoration-none">
+                                    <span>{{ $result->original_prompt }}</span>
+                                </a>
                                 @if(isset($result->image))
                                     <img src="{{ $result->image->path }}" alt="Image" class="img-thumbnail"
                                          style="width: 100px; height: auto;">
